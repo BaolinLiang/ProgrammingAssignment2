@@ -1,24 +1,32 @@
-makeVector<-function(x= numeric()){
-        m<-NULL#把m赋值为null
-        set<-function(y){
-                x<<-y #set(y)后，x=y,m=null
+##  These functions cache the inverse of a matrix
+
+## The makeCacheMatrix function is for building a special object consist of 
+##several functions around a given matrix. 
+
+makeCacheMatrix <- function(x = matrix()) {set<-function(y){
+                x<<-y 
                 m<<-NULL
         }
-        get <-function() x #把x赋值给get
-        setmean<-function(mean) m<<-mean #这里求均值，只是依然存疑，为什么这里要用function(mean）。。或者在本函数里，不会做mean相关的操作，真正的solve实在cachemean里执行？
-getmean<-function() m #这里把m复制给getmean（NULL）
+        get <-function() x #
+        setinverse<-function(inverse) m<<-inverse
+getinverse<-function() m 
         list(set=set,get=get,
-             setmean=setmean,
-             getmean=getmean)
+             setinverse=setinverse,
+             getinverse=getinverse)
 }
-cachemean<-function(x, ...){
-        m<-x$getmean() #首先把getmean赋值给m，如果m不是NULL的话弹出下列提示
+
+
+## This function computes the inverse of the special "matrix" returned by makeCacheMatrix above or 
+##retrieve the inverse from the cache
+
+cacheSolve <- function(x, ...) { 
+        m<-x$getinverse() 
         if(!is.null(m)){
                 message("getting cached data")
                 return(m)
-        }#出现缓存值
-        data<-x$get()#把最开始的numberic向量赋值给data
+        }
+        data<-x$get()
         m<-mean(data, ...) 
-        x$setmean(m)#缓存m
-        m
+        x$setmean(m)
+        m        ## Return a matrix that is the inverse of 'x'
 }
